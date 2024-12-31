@@ -1,4 +1,5 @@
-import Data.ByteString.Char8 (split)
+import Data.List.Split (splitOn)
+
 zipSorted :: Ord a => ([a], [a]) -> [a]
 zipSorted ([], []) = []
 zipSorted (xs, []) = xs
@@ -12,8 +13,8 @@ zipSorted (x:xs, y:ys)
 mergeSort :: Ord a => [a] -> [a]
 mergeSort [] = []
 mergeSort [x] = [x]
-mergeSort xs = zipSorted (mergeSort (fst (splitAt ((length xs) `div` 2) xs)),
-                          mergeSort (snd (splitAt ((length xs) `div` 2) xs)))
+mergeSort xs = zipSorted (mergeSort (take (length xs `div` 2) xs),
+                          mergeSort (drop (length xs `div` 2) xs))
 
 solveSorted :: [Int] -> [Int] -> Int
 solveSorted [] [] = 0
@@ -21,3 +22,8 @@ solveSorted (x:xs) (y:ys) = abs (x - y) + solveSorted xs ys
 
 solve :: [Int] -> [Int] -> Int
 solve xs ys = solveSorted (mergeSort xs) (mergeSort ys)
+
+main = do
+    inp <- getContents
+    let (xs, ys) = (map ((\num -> read num :: Int) . head . (splitOn "   ")) (lines inp), map ((\num -> read num :: Int) . (!! 1) . (splitOn "   ")) (lines inp)) in
+        print $ solve xs ys
